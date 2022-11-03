@@ -1,37 +1,46 @@
-let path = require('path');
+const path = require('path');
+const fs = require('fs');
+const { getLinks } = require('./readFile.js');
+
 
 //validar si el archivo que recibo si existe ese archivo
+//console.log(getLinks('./prueba.md'));
 
-let fileInput = (file) => {
-  let ext = (path.extname(file));
-  console.log(ext);
+const mdLinks = (route, option) => {
+  return new Promise((resolve) => {
 
-  if (ext === '.md') {
-    console.log('si es la extensión ', ext);
-  } else {
-    console.log('no es md ', ext);
-  }
-}
-const mdLinks = (ruta) => {
-  //evaluar si es absoluta o no la ruta
-  let rutaConvertida
+    //evaluar si es absoluta o no la ruta
+    let routeNew
 
-  if (path.isAbsolute(ruta)) {
-    rutaConvertida = ruta
-  } else {
-    rutaConvertida = path.resolve(ruta)
-  }
-  console.log(rutaConvertida)
-  let ext = (path.extname(rutaConvertida));
-  console.log(ext);
+    if (path.isAbsolute(route)) {
+      routeNew = route
+    } else {
+      routeNew = path.resolve(route)
+    }
 
-  if (ext === '.md') {
-    console.log('si es la extensión ', ext);
-  } else {
-    console.log('no es md ', ext);
-  }
-  //tengo un ruta absoluta
-  //md o no md
-}
+    //comprobar si existe la ruta y enseguida ver la extensión
+    if (fs.existsSync(route)) {
+      let exist = fs.statSync(route);
 
-mdLinks(process.argv[2]);
+
+      if (exist.isDirectory()) {
+        throw TypeError('Esto no es un archivo');
+      }
+
+      if (path.extname(routeNew) === '.md') {
+        const arrLink = getLinks(routeNew)
+
+        resolve(arrLink);
+      } else {
+        //console.log('no es md ', (path.extname(routeNew)));
+      }
+
+    } else {
+      //console.log('no existe la ruta');
+
+    }
+  })
+
+};
+
+mdLinks(process.argv[2]).then (console.log)
