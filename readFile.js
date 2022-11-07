@@ -7,22 +7,22 @@ const fs = require('fs');
  * @return an array of objects containing link information
  */
 function getLinks(archive) {// 
+   // arrayLinks = fs.readFileSync(pathInput, 'utf8').match(/\[(.+)\]\((https?:\/\/.+)\)/gi);
     //leer un archivo
     const content = fs.readFileSync(archive, 'utf-8');
     let arrayLinks = [];
-    let regex = /\[.*\]\(.*\)/ig;
+    let regex = /\[(.+)\]\((https?:\/\/.+)\)/gi;
 
     const matches = content.match(regex) //un array de strings [texto(link)]
+    
 
     matches.forEach((element) => {
-        /* let regexText = element.match(/\[.*\]/ig);
-         let regexHref = element.match(/\(.*\)/ig);*/
 
         linkReplace = element.replace("](", "%");
         linkReplace = linkReplace.replace("[", "");
         linkReplace = linkReplace.replace(")", "");
-        //console.log(linkReplace);
-
+        
+        //creo aquí va la promesa
         let limit = linkReplace.indexOf("%");
         let object = {
             href: linkReplace.slice(limit + 1),
@@ -30,13 +30,12 @@ function getLinks(archive) {//
             file: archive,
         };
         arrayLinks.push(object);
-    
 
     });
     return arrayLinks;
 }
 
-getLinks('prueba.md');
+//(getLinks('prueba.md'));
 
 module.exports = { getLinks }
 
